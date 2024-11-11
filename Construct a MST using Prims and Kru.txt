@@ -1,0 +1,167 @@
+Construct a MST using Prims and Kruskal Algorithm
+
+Prims Algorithm
+
+#include <iostream>
+#include <vector>
+#include <climits>
+using namespace std;
+
+#define V 5 // Number of vertices in the graph
+
+// Function to find the vertex with the minimum key value that is not yet included in MST
+int minKey(int key[], bool mstSet[]) {
+    int min = INT_MAX, minIndex;
+
+    for (int v = 0; v < V; v++) {
+        if (!mstSet[v] && key[v] < min) {
+            min = key[v];
+            minIndex = v;
+        }
+    }
+    return minIndex;
+}
+
+// Function to print the constructed MST stored in parent[]
+void printMST(int parent[], int graph[V][V]) {
+    cout << "Edge \tWeight\n";
+    for (int i = 1; i < V; i++) {
+        cout << parent[i] << " - " << i << " \t" << graph[i][parent[i]] << " \n";
+    }
+}
+
+// Function to implement Prim's MST algorithm
+void primMST(int graph[V][V]) {
+    int parent[V]; // Array to store constructed MST
+    int key[V]; // Key values used to pick minimum weight edge
+    bool mstSet[V]; // To represent the vertices not yet included in MST
+
+    // Initialize all keys as infinite
+    for (int i = 0; i < V; i++) {
+        key[i] = INT_MAX;
+        mstSet[i] = false;
+    }
+
+    // Always include the first vertex in MST
+    key[0] = 0;
+    parent[0] = -1; // First node is the root of MST
+
+    // The MST will have V vertices
+    for (int count = 0; count < V - 1; count++) {
+        int u = minKey(key, mstSet);
+        mstSet[u] = true;
+
+        // Update key value and parent index of the adjacent vertices
+        for (int v = 0; v < V; v++) {
+            if (graph[u][v] && !mstSet[v] && graph[u][v] < key[v]) {
+                parent[v] = u;
+                key[v] = graph[u][v];
+            }
+        }
+    }
+    printMST(parent, graph);
+}
+
+int main() {
+    int graph[V][V] = {
+        {0, 2, 0, 6, 0},
+        {2, 0, 3, 8, 5},
+        {0, 3, 0, 0, 7},
+        {6, 8, 0, 0, 9},
+        {0, 5, 7, 9, 0}
+    };
+
+    cout << "Minimum Spanning Tree (Prim's Algorithm):\n";
+    primMST(graph);
+
+    return 0;
+}
+
+
+
+Kruskal Algorithm
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+struct Edge {
+    int src, dest, weight;
+};
+
+// Comparator function to sort edges by weight
+bool compare(Edge a, Edge b) {
+    return a.weight < b.weight;
+}
+
+// Find function for Union-Find
+int find(int parent[], int i) {
+    if (parent[i] != i) {
+        parent[i] = find(parent, parent[i]);
+    }
+    return parent[i];
+}
+
+// Union function for Union-Find
+void Union(int parent[], int rank[], int x, int y) {
+    int rootX = find(parent, x);
+    int rootY = find(parent, y);
+
+    if (rank[rootX] < rank[rootY]) {
+        parent[rootX] = rootY;
+    } else if (rank[rootX] > rank[rootY]) {
+        parent[rootY] = rootX;
+    } else {
+        parent[rootY] = rootX;
+        rank[rootX]++;
+    }
+}
+
+// Function to implement Kruskal's MST algorithm
+void kruskalMST(vector<Edge>& edges, int V) {
+    // Sort edges by weight
+    sort(edges.begin(), edges.end(), compare);
+
+    vector<Edge> result; // Store the resulting MST
+    int parent[V];
+    int rank[V];
+
+    // Initialize Union-Find structure
+    for (int i = 0; i < V; i++) {
+        parent[i] = i;
+        rank[i] = 0;
+    }
+
+    for (Edge& edge : edges) {
+        int x = find(parent, edge.src);
+        int y = find(parent, edge.dest);
+
+        // Check if including this edge creates a cycle
+        if (x != y) {
+            result.push_back(edge);
+            Union(parent, rank, x, y);
+        }
+
+        // Stop if we have enough edges for the MST
+        if (result.size() == V - 1) break;
+    }
+
+    // Display the MST
+    cout << "Edge \tWeight\n";
+    for (auto& edge : result) {
+        cout << edge.src << " - " << edge.dest << "\t" << edge.weight << endl;
+    }
+}
+
+int main() {
+    int V = 4;
+    vector<Edge> edges = {
+        {0, 1, 10}, {0, 2, 6}, {0, 3, 5}, {1, 3, 15}, {2, 3, 4}
+    };
+
+    cout << "Minimum Spanning Tree (Kruskal's Algorithm):\n";
+    kruskalMST(edges, V);
+
+    return 0;
+}

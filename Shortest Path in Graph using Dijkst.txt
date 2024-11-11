@@ -1,0 +1,79 @@
+Shortest Path in Graph using Dijkstra's Algorithm
+
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <climits>
+using namespace std;
+
+// Pair representing (node, weight)
+typedef pair<int, int> pii;
+
+class Graph {
+    int V; // Number of vertices
+    vector<vector<pii>> adj; // Adjacency list where each entry is (neighbor, weight)
+
+public:
+    Graph(int V) : V(V) {
+        adj.resize(V);
+    }
+
+    // Function to add an edge to the graph
+    void addEdge(int u, int v, int weight) {
+        adj[u].push_back({v, weight});
+        adj[v].push_back({u, weight}); // For undirected graph; remove this line for directed graph
+    }
+
+    // Function to perform Dijkstra's Algorithm
+    void dijkstra(int src) {
+        // Min-heap priority queue; each element is (distance, node)
+        priority_queue<pii, vector<pii>, greater<pii>> pq;
+
+        // Distance vector to store the minimum distance from the source to each node
+        vector<int> dist(V, INT_MAX);
+
+        // Start from the source node
+        pq.push({0, src});
+        dist[src] = 0;
+
+        while (!pq.empty()) {
+            int u = pq.top().second; // Current node
+            pq.pop();
+
+            // Process all adjacent nodes of u
+            for (auto &neighbor : adj[u]) {
+                int v = neighbor.first; // Neighbor node
+                int weight = neighbor.second; // Weight of the edge u-v
+
+                // If there is a shorter path to v through u
+                if (dist[u] + weight < dist[v]) {
+                    dist[v] = dist[u] + weight;
+                    pq.push({dist[v], v});
+                }
+            }
+        }
+
+        // Print the shortest distances
+        cout << "Vertex \t Distance from Source (" << src << ")\n";
+        for (int i = 0; i < V; i++) {
+            cout << i << " \t\t " << dist[i] << "\n";
+        }
+    }
+};
+
+int main() {
+    Graph g(5);
+    g.addEdge(0, 1, 2);
+    g.addEdge(0, 3, 6);
+    g.addEdge(1, 2, 3);
+    g.addEdge(1, 3, 8);
+    g.addEdge(1, 4, 5);
+    g.addEdge(2, 4, 7);
+    g.addEdge(3, 4, 9);
+
+    int source = 0;
+    cout << "Shortest Paths from Source Node " << source << " using Dijkstra's Algorithm:\n";
+    g.dijkstra(source);
+
+    return 0;
+}

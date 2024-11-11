@@ -1,0 +1,72 @@
+Implementation of Following Searching Techniques on Linear Data Structures
+A. Linear Search 
+B. Binary Search
+
+
+#include <iostream>
+#include <algorithm> // for std::sort
+
+using namespace std;
+
+// Function for Linear Search
+int linearSearch(int arr[], int n, int key) {
+    for (int i = 0; i < n; i++) {
+        if (arr[i] == key) {
+            return i; // Return the index of the found element
+        }
+    }
+    return -1; // If the element is not found
+}
+
+// Function for Binary Search (Iterative approach)
+int binarySearch(int arr[], int n, int key) {
+    int left = 0;
+    int right = n - 1;
+    
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        
+        // Check if the key is present at mid
+        if (arr[mid] == key) {
+            return mid;
+        }
+        // If key is greater, ignore the left half
+        else if (arr[mid] < key) {
+            left = mid + 1;
+        }
+        // If key is smaller, ignore the right half
+        else {
+            right = mid - 1;
+        }
+    }
+    return -1; // If the element is not found
+}
+
+int main() {
+    int arr[] = { 10, 20, 30, 40, 50, 60, 70, 80, 90 };
+    int n = sizeof(arr) / sizeof(arr[0]);
+    int key;
+
+    // Linear Search
+    cout << "Enter the element to search (Linear Search): ";
+    cin >> key;
+    int linearResult = linearSearch(arr, n, key);
+    if (linearResult != -1) {
+        cout << "Element found at index " << linearResult << " using Linear Search.\n";
+    } else {
+        cout << "Element not found using Linear Search.\n";
+    }
+
+    // Binary Search
+    // Binary Search requires the array to be sorted, but arr is already sorted.
+    cout << "\nEnter the element to search (Binary Search): ";
+    cin >> key;
+    int binaryResult = binarySearch(arr, n, key);
+    if (binaryResult != -1) {
+        cout << "Element found at index " << binaryResult << " using Binary Search.\n";
+    } else {
+        cout << "Element not found using Binary Search.\n";
+    }
+
+    return 0;
+}

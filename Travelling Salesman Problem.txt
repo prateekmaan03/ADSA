@@ -1,0 +1,59 @@
+Travelling Salesman Problem
+
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <limits>
+using namespace std;
+
+// Function to calculate the distance between two cities
+double distance(pair<int, int> city1, pair<int, int> city2) {
+    return sqrt(pow(city1.first - city2.first, 2) + pow(city1.second - city2.second, 2));
+}
+
+// Nearest Neighbor function to solve TSP approximately
+double tspNearestNeighbor(vector<pair<int, int>>& cities) {
+    int n = cities.size();
+    vector<bool> visited(n, false);
+    int startCity = 0; // Starting from the first city
+    visited[startCity] = true;
+    int currentCity = startCity;
+    double totalDistance = 0.0;
+
+    cout << "Tour Path: " << startCity << " ";
+
+    // Iterate until all cities are visited
+    for (int i = 1; i < n; i++) {
+        int nearestCity = -1;
+        double minDistance = numeric_limits<double>::max();
+
+        // Find the nearest unvisited city
+        for (int j = 0; j < n; j++) {
+            if (!visited[j] && distance(cities[currentCity], cities[j]) < minDistance) {
+                minDistance = distance(cities[currentCity], cities[j]);
+                nearestCity = j;
+            }
+        }
+
+        // Move to the nearest city
+        visited[nearestCity] = true;
+        totalDistance += minDistance;
+        currentCity = nearestCity;
+
+        cout << "-> " << nearestCity << " ";
+    }
+
+    // Return to the starting city to complete the cycle
+    totalDistance += distance(cities[currentCity], cities[startCity]);
+    cout << "-> " << startCity << endl;
+
+    return totalDistance;
+}
+
+int main() {
+    vector<pair<int, int>> cities = {{0, 0}, {2, 3}, {5, 4}, {1, 1}, {3, 2}};
+
+    cout << "Minimum tour distance (Nearest Neighbor): " << tspNearestNeighbor(cities) << endl;
+
+    return 0;
+}
